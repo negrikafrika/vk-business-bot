@@ -4,22 +4,18 @@ import random
 import json
 from flask import Flask, request
 
-# ==================== ВСТАВЬТЕ СВОИ ДАННЫЕ ====================
-TOKEN = 'vk1.a.fp0aOwHumI9CXOTXhDsazPnOlvxboV3auWdLu_VZoyWR7ZqgjYpe3clTuafI09fk3_mzqN1s6mCYjmjO3RJohmMh5dArNxyZBJVs1VywKeEr1GwPBFkFZtszjYHqkaP-BR_IxvWqJ_85CSkUwP5MvqqMCKDBjEE4CKaSnXRdY4XswoGi4AJ-dOC2cZD0JJs0-VB3X9T73zQrDKycALEBEA'          # Токен из вкладки «Ключи доступа»
-CONFIRMATION_TOKEN = '2dc82528'               # Строка из поля «Ключ подтверждения» в Callback API
-GROUP_ID = '237615107'                        # ID вашего сообщества (цифры)
-MANAGER_ID = '627273348'                      # Ваш личный VK ID (цифры)
-# ==============================================================
+# ==================== ВАШИ ДАННЫЕ ====================
+TOKEN = 'vk1.a.fp0aOwHumI9CXOTXhDsazPnOlvxboV3auWdLu_VZoyWR7ZqgjYpe3clTuafI09fk3_mzqN1s6mCYjmjO3RJohmMh5dArNxyZBJVs1VywKeEr1GwPBFkFZtszjYHqkaP-BR_IxvWqJ_85CSkUwP5MvqqMCKDBjEE4CKaSnXRdY4XswoGi4AJ-dOC2cZD0JJs0-VB3X9T73zQrDKycALEBEA'
+CONFIRMATION_TOKEN = '2dc82528'       # Строка из Callback API (ваш ключ подтверждения)
+GROUP_ID = '237615107'                # ID вашего сообщества (цифры) — ЗАМЕНИТЕ, если не тот!
+MANAGER_ID = '627273348'              # Ваш личный VK ID
 
-# Проверка, что всё заполнено (для отладки)
-if TOKEN == 'vk1.a.ВАШ_ТОКЕН_СООБЩЕСТВА':
-    print("❌ ВНИМАНИЕ: Вы не заменили TOKEN на свой!")
+# Проверки (чтобы случайно не оставить значения по умолчанию)
 if CONFIRMATION_TOKEN == '2dc82528':
-    print("❌ ВНИМАНИЕ: Вы не заменили CONFIRMATION_TOKEN на свой!")
+    print("⚠️ ВНИМАНИЕ: Убедитесь, что confirmation token верный (на скриншоте было 2dc82528).")
 if GROUP_ID == '237615107':
-    print("❌ ВНИМАНИЕ: Вы не заменили GROUP_ID на свой!")
-if MANAGER_ID == '123456789':
-    print("❌ ВНИМАНИЕ: Вы не заменили MANAGER_ID на свой!")
+    print("⚠️ ВНИМАНИЕ: Проверьте GROUP_ID — возможно, он другой. Скопируйте из адреса вашей группы.")
+# =====================================================
 
 # ========== ИНИЦИАЛИЗАЦИЯ VK ==========
 vk_session = vk_api.VkApi(token=TOKEN)
@@ -52,7 +48,7 @@ def get_back_keyboard():
     keyboard.add_button("◀ Назад", color=VkKeyboardColor.SECONDARY, payload=json.dumps({"cmd": "back"}))
     return keyboard
 
-# ========== ОБРАБОТЧИКИ КОМАНД ==========
+# ========== ОБРАБОТЧИКИ ==========
 def handle_start(user_id):
     text = (
         "🚀 Добро пожаловать в агентство по продвижению малого бизнеса!\n\n"
@@ -63,11 +59,11 @@ def handle_start(user_id):
 
 def handle_prices(user_id):
     text = (
-        "📊 **Наши услуги и цены**\n\n"
-        "🛒 Ведение маркетплейсов (Ozon, WB, Яндекс.Маркет) — **12 000 ₽/мес**\n"
-        "📱 Ведение соцсетей (Instagram, VK, Telegram) — **15 000 ₽/мес**\n"
-        "🎯 Настройка и ведение рекламы (Таргет, Яндекс.Директ) — **12 000 ₽/мес**\n"
-        "💎 **Комплексная подписка** (всё сразу) — **35 000 ₽/мес**\n\n"
+        "📊 Наши услуги и цены\n\n"
+        "🛒 Ведение маркетплейсов (Ozon, WB, Яндекс.Маркет) — 12 000 ₽/мес\n"
+        "📱 Ведение соцсетей (Instagram, VK, Telegram) — 15 000 ₽/мес\n"
+        "🎯 Настройка и ведение рекламы (Таргет, Яндекс.Директ) — 12 000 ₽/мес\n"
+        "💎 Комплексная подписка (всё сразу) — 35 000 ₽/мес\n\n"
         "✅ В стоимость входит: аналитика, контент, ежедневный отчёт, поддержка 24/7.\n"
         "Для точного расчёта под ваш бизнес нажмите «Связаться с менеджером»."
     )
@@ -82,7 +78,7 @@ def handle_manager(user_id):
 
 def handle_about(user_id):
     text = (
-        "ℹ️ **О компании**\n\n"
+        "ℹ️ О компании\n\n"
         "Мы — команда маркетологов, таргетологов и SMM-специалистов с 5-летним опытом.\n"
         "Помогаем малому бизнесу привлекать клиентов из соцсетей и маркетплейсов.\n\n"
         "📌 Наши принципы:\n"
@@ -95,7 +91,7 @@ def handle_about(user_id):
 
 def handle_portfolio(user_id):
     text = (
-        "📸 **Примеры работ**\n\n"
+        "📸 Примеры работ\n\n"
         "🔹 Магазин детской одежды «Bambini» — рост продаж на Ozon в 3 раза за 2 месяца.\n"
         "🔹 Студия загара «SunCity» — +250 подписчиков в VK, 30 заявок за неделю.\n"
         "🔹 Интернет-магазин подарков — настройка рекламы, окупаемость 140%.\n\n"
@@ -105,14 +101,14 @@ def handle_portfolio(user_id):
 
 def handle_faq(user_id):
     text = (
-        "❓ **Часто задаваемые вопросы**\n\n"
-        "1️⃣ *Сколько времени занимает запуск?*\n"
+        "❓ Часто задаваемые вопросы\n\n"
+        "1️⃣ Сколько времени занимает запуск?\n"
         "   — До 3 дней на анализ и стратегию, затем запуск.\n\n"
-        "2️⃣ *Есть ли договор и гарантии?*\n"
+        "2️⃣ Есть ли договор и гарантии?\n"
         "   — Да, работаем по договору. Гарантируем выполнение KPI.\n\n"
-        "3️⃣ *Можно ли сначала попробовать одну услугу?*\n"
+        "3️⃣ Можно ли сначала попробовать одну услугу?\n"
         "   — Да, любой тариф можно подключить отдельно.\n\n"
-        "4️⃣ *Как получить отчёт о работе?*\n"
+        "4️⃣ Как получить отчёт о работе?\n"
         "   — Еженедельный отчёт в Google Sheets или PDF.\n\n"
         "Остались вопросы? Нажмите «Связаться с менеджером»."
     )
@@ -121,7 +117,7 @@ def handle_faq(user_id):
 def handle_back(user_id):
     send_message(user_id, "Возвращаемся в главное меню.", get_main_keyboard())
 
-# ========== FLASK-ПРИЛОЖЕНИЕ (ВЕБХУКИ) ==========
+# ========== FLASK ВЕБХУК ==========
 app = Flask(__name__)
 
 @app.route('/', methods=['POST'])
@@ -130,12 +126,10 @@ def webhook():
     data = request.json
     print(f"📦 Данные: {data}")
 
-    # Подтверждение сервера
     if data.get('type') == 'confirmation':
         print("🔑 Отправляем confirmation token")
         return CONFIRMATION_TOKEN
 
-    # Обработка нового сообщения
     if data.get('type') == 'message_new':
         msg_obj = data['object']['message']
         user_id = msg_obj['from_id']
@@ -150,7 +144,6 @@ def webhook():
             except Exception as e:
                 print(f"Ошибка парсинга payload: {e}")
 
-        # Обработка команд из кнопок (payload)
         if cmd == 'prices':
             handle_prices(user_id)
         elif cmd == 'manager':
@@ -163,8 +156,6 @@ def webhook():
             handle_faq(user_id)
         elif cmd == 'back':
             handle_back(user_id)
-
-        # Текстовые команды (если пользователь пишет вручную)
         elif msg_text in ['начать', '/start', 'старт', 'привет', 'меню']:
             handle_start(user_id)
         elif msg_text in ['услуги', 'цены', 'прайс', 'стоимость']:
@@ -180,7 +171,7 @@ def webhook():
         elif msg_text == 'назад':
             handle_back(user_id)
         else:
-            send_message(user_id, "🤔 Я не понял. Напишите «начать», чтобы увидеть меню, или нажмите любую кнопку.", get_main_keyboard())
+            send_message(user_id, "🤔 Я не понял. Напишите «начать», чтобы увидеть меню.", get_main_keyboard())
 
     return 'ok'
 
