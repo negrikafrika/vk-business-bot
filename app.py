@@ -5,17 +5,26 @@ import json
 import os
 from flask import Flask, request
 
-# ========== НАСТРОЙКИ (через переменные окружения) ==========
-TOKEN = os.environ.get('VK_TOKEN')            # Токен сообщества
-CONFIRMATION_TOKEN = 'vk1.a.fp0aOwHumI9CXOTXhDsazPnOlvxboV3auWdLu_VZoyWR7ZqgjYpe3clTuafI09fk3_mzqN1s6mCYjmjO3RJohmMh5dArNxyZBJVs1VywKeEr1GwPBFkFZtszjYHqkaP-BR_IxvWqJ_85CSkUwP5MvqqMCKDBjEE4CKaSnXRdY4XswoGi4AJ-dOC2cZD0JJs0-VB3X9T73zQrDKycALEBEA'  # Из настроек Callback API VK
-GROUP_ID = os.environ.get('GROUP_ID')         # ID группы (число)
-MANAGER_ID = os.environ.get('MANAGER_ID')     # VK ID менеджера
+# ========== ПЕРЕМЕННЫЕ ОКРУЖЕНИЯ (задать в Bothost) ==========
+TOKEN = os.environ.get('VK_TOKEN')                 # Токен сообщества
+CONFIRMATION_TOKEN = os.environ.get('vk1.a.fp0aOwHumI9CXOTXhDsazPnOlvxboV3auWdLu_VZoyWR7ZqgjYpe3clTuafI09fk3_mzqN1s6mCYjmjO3RJohmMh5dArNxyZBJVs1VywKeEr1GwPBFkFZtszjYHqkaP-BR_IxvWqJ_85CSkUwP5MvqqMCKDBjEE4CKaSnXRdY4XswoGi4AJ-dOC2cZD0JJs0-VB3X9T73zQrDKycALEBEA')  # Ключ подтверждения из Callback API VK
+GROUP_ID = os.environ.get('GROUP_ID')              # ID группы (число)
+MANAGER_ID = os.environ.get('MANAGER_ID')          # VK ID менеджера
+
+# Проверка, что все переменные заданы (для отладки)
+if not TOKEN:
+    print("❌ Ошибка: не задана переменная VK_TOKEN")
+if not CONFIRMATION_TOKEN:
+    print("❌ Ошибка: не задана переменная CONFIRMATION_TOKEN")
+if not GROUP_ID:
+    print("❌ Ошибка: не задана переменная GROUP_ID")
+if not MANAGER_ID:
+    print("❌ Ошибка: не задана переменная MANAGER_ID")
 
 # ========== ИНИЦИАЛИЗАЦИЯ VK ==========
 vk_session = vk_api.VkApi(token=TOKEN)
 vk = vk_session.get_api()
 
-# ========== ВСПОМОГАТЕЛЬНАЯ ФУНКЦИЯ ОТПРАВКИ ==========
 def send_message(user_id, text, keyboard=None):
     params = {
         "user_id": user_id,
@@ -43,7 +52,7 @@ def get_back_keyboard():
     keyboard.add_button("◀ Назад", color=VkKeyboardColor.SECONDARY, payload=json.dumps({"cmd": "back"}))
     return keyboard
 
-# ========== ОБРАБОТЧИКИ КОМАНД (ПОЛНЫЕ ТЕКСТЫ) ==========
+# ========== ОБРАБОТЧИКИ КОМАНД ==========
 def handle_start(user_id):
     text = (
         "🚀 Добро пожаловать в агентство по продвижению малого бизнеса!\n\n"
@@ -112,15 +121,19 @@ def handle_faq(user_id):
 def handle_back(user_id):
     send_message(user_id, "Возвращаемся в главное меню.", get_main_keyboard())
 
-# ========== FLASK-ПРИЛОЖЕНИЕ ДЛЯ ВЕБХУКОВ ==========
+# ========== FLASK-ПРИЛОЖЕНИЕ ==========
 app = Flask(__name__)
 
 @app.route('/', methods=['POST'])
 def webhook():
+    # Логирование входящего запроса
+    print("📩 Получен запрос от VK")
     data = request.json
+    print(f"📦 Данные: {data}")
 
-    # Подтверждение сервера (обязательно)
+    # Подтверждение сервера
     if data.get('type') == 'confirmation':
+        print("🔑 Отправляем confirmation token")
         return CONFIRMATION_TOKEN
 
     # Обработка нового сообщения
@@ -129,15 +142,16 @@ def webhook():
         user_id = msg_obj['from_id']
         msg_text = msg_obj.get('text', '').lower().strip()
         payload = msg_obj.get('payload')
+        print(f"👤 Пользователь {user_id}: текст='{msg_text}', payload={payload}")
 
         cmd = None
         if payload:
             try:
                 cmd = json.loads(payload).get('cmd')
-            except:
-                pass
+            except Exception as e:
+                print(f"Ошибка парсинга payload: {e}")
 
-        # Обработка команд из кнопок (payload)
+        # Обработка команд из кнопок
         if cmd == 'prices':
             handle_prices(user_id)
         elif cmd == 'manager':
@@ -151,7 +165,7 @@ def webhook():
         elif cmd == 'back':
             handle_back(user_id)
 
-        # Текстовые команды (если пользователь пишет вручную)
+        # Текстовые команды
         elif msg_text in ['начать', '/start', 'старт', 'привет', 'меню']:
             handle_start(user_id)
         elif msg_text in ['услуги', 'цены', 'прайс', 'стоимость']:
@@ -167,11 +181,7 @@ def webhook():
         elif msg_text == 'назад':
             handle_back(user_id)
         else:
-            send_message(
-                user_id,
-                "🤔 Я не понял. Напишите «начать», чтобы увидеть меню, или нажмите любую кнопку.",
-                get_main_keyboard()
-            )
+            send_message(user_id, "🤔 Я не понял. Напишите «начать», чтобы увидеть меню, или нажмите любую кнопку.", get_main_keyboard())
 
     return 'ok'
 
