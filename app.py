@@ -2,24 +2,24 @@ import vk_api
 from vk_api.keyboard import VkKeyboard, VkKeyboardColor
 import random
 import json
-import os
 from flask import Flask, request
 
-# ========== ПЕРЕМЕННЫЕ ОКРУЖЕНИЯ (задать в Bothost) ==========
-TOKEN = os.environ.get('VK_TOKEN')                 # Токен сообщества
-CONFIRMATION_TOKEN = os.environ.get('vk1.a.fp0aOwHumI9CXOTXhDsazPnOlvxboV3auWdLu_VZoyWR7ZqgjYpe3clTuafI09fk3_mzqN1s6mCYjmjO3RJohmMh5dArNxyZBJVs1VywKeEr1GwPBFkFZtszjYHqkaP-BR_IxvWqJ_85CSkUwP5MvqqMCKDBjEE4CKaSnXRdY4XswoGi4AJ-dOC2cZD0JJs0-VB3X9T73zQrDKycALEBEA')  # Ключ подтверждения из Callback API VK
-GROUP_ID = os.environ.get('GROUP_ID')              # ID группы (число)
-MANAGER_ID = os.environ.get('MANAGER_ID')          # VK ID менеджера
+# ==================== ВСТАВЬТЕ СВОИ ДАННЫЕ ====================
+TOKEN = 'vk1.a.ВАШ_ТОКЕН_СООБЩЕСТВА'          # Токен из вкладки «Ключи доступа»
+CONFIRMATION_TOKEN = '2dc82528'               # Строка из поля «Ключ подтверждения» в Callback API
+GROUP_ID = '237615107'                        # ID вашего сообщества (цифры)
+MANAGER_ID = '123456789'                      # Ваш личный VK ID (цифры)
+# ==============================================================
 
-# Проверка, что все переменные заданы (для отладки)
-if not TOKEN:
-    print("❌ Ошибка: не задана переменная VK_TOKEN")
-if not CONFIRMATION_TOKEN:
-    print("❌ Ошибка: не задана переменная CONFIRMATION_TOKEN")
-if not GROUP_ID:
-    print("❌ Ошибка: не задана переменная GROUP_ID")
-if not MANAGER_ID:
-    print("❌ Ошибка: не задана переменная MANAGER_ID")
+# Проверка, что всё заполнено (для отладки)
+if TOKEN == 'vk1.a.ВАШ_ТОКЕН_СООБЩЕСТВА':
+    print("❌ ВНИМАНИЕ: Вы не заменили TOKEN на свой!")
+if CONFIRMATION_TOKEN == '2dc82528':
+    print("❌ ВНИМАНИЕ: Вы не заменили CONFIRMATION_TOKEN на свой!")
+if GROUP_ID == '237615107':
+    print("❌ ВНИМАНИЕ: Вы не заменили GROUP_ID на свой!")
+if MANAGER_ID == '123456789':
+    print("❌ ВНИМАНИЕ: Вы не заменили MANAGER_ID на свой!")
 
 # ========== ИНИЦИАЛИЗАЦИЯ VK ==========
 vk_session = vk_api.VkApi(token=TOKEN)
@@ -121,12 +121,11 @@ def handle_faq(user_id):
 def handle_back(user_id):
     send_message(user_id, "Возвращаемся в главное меню.", get_main_keyboard())
 
-# ========== FLASK-ПРИЛОЖЕНИЕ ==========
+# ========== FLASK-ПРИЛОЖЕНИЕ (ВЕБХУКИ) ==========
 app = Flask(__name__)
 
 @app.route('/', methods=['POST'])
 def webhook():
-    # Логирование входящего запроса
     print("📩 Получен запрос от VK")
     data = request.json
     print(f"📦 Данные: {data}")
@@ -151,7 +150,7 @@ def webhook():
             except Exception as e:
                 print(f"Ошибка парсинга payload: {e}")
 
-        # Обработка команд из кнопок
+        # Обработка команд из кнопок (payload)
         if cmd == 'prices':
             handle_prices(user_id)
         elif cmd == 'manager':
@@ -165,7 +164,7 @@ def webhook():
         elif cmd == 'back':
             handle_back(user_id)
 
-        # Текстовые команды
+        # Текстовые команды (если пользователь пишет вручную)
         elif msg_text in ['начать', '/start', 'старт', 'привет', 'меню']:
             handle_start(user_id)
         elif msg_text in ['услуги', 'цены', 'прайс', 'стоимость']:
