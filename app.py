@@ -5,10 +5,10 @@ import json
 from flask import Flask, request
 
 # ==================== ВСТАВЬТЕ СВОИ ДАННЫЕ ====================
-TOKEN = 'vk1.a.ВАШ_ТОКЕН_СООБЩЕСТВА'          # Токен из вкладки «Ключи доступа»
+TOKEN = 'vk1.a.fp0aOwHumI9CXOTXhDsazPnOlvxboV3auWdLu_VZoyWR7ZqgjYpe3clTuafI09fk3_mzqN1s6mCYjmjO3RJohmMh5dArNxyZBJVs1VywKeEr1GwPBFkFZtszjYHqkaP-BR_IxvWqJ_85CSkUwP5MvqqMCKDBjEE4CKaSnXRdY4XswoGi4AJ-dOC2cZD0JJs0-VB3X9T73zQrDKycALEBEA'          # Токен из вкладки «Ключи доступа»
 CONFIRMATION_TOKEN = '2dc82528'               # Строка из поля «Ключ подтверждения» в Callback API
 GROUP_ID = '237615107'                        # ID вашего сообщества (цифры)
-MANAGER_ID = '123456789'                      # Ваш личный VK ID (цифры)
+MANAGER_ID = '627273348'                      # Ваш личный VK ID (цифры)
 # ==============================================================
 
 # Проверка, что всё заполнено (для отладки)
